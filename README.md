@@ -51,3 +51,7 @@ All state is stored as JSON strings for deterministic serialization:
 ## Tech
 
 GenLayer Intelligent Contract (Python), genlayer-js deployment scripts, Node.js. No mocks: every value comes from live web sources aggregated under validator consensus.
+
+## Tests
+
+Automated on-chain test suite against Testnet Bradbury (npm test): deploys a fresh instance and checks deploy, feed registration, state views, empty-value-before-update, unknown-feed handling, and a guard revert for feeds with fewer than two sources. Result: 6/6 passing.
