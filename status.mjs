@@ -1,0 +1,13 @@
+import { writeFileSync } from "node:fs";
+import { createClient, createAccount } from "genlayer-js";
+import { testnetBradbury } from "genlayer-js/chains";
+const account = createAccount(process.env.PRIVATE_KEY);
+const client = createClient({ chain: testnetBradbury, account });
+const HASH = process.argv[2];
+const tx = await client.getTransaction({ hash: HASH });
+const safe = JSON.stringify(tx, (k, v) => (typeof v === "bigint" ? v.toString() : v), 2);
+writeFileSync("tx.json", safe);
+console.log("status:", tx?.status);
+console.log("statusName:", tx?.statusName);
+console.log("txExecutionResultName:", tx?.txExecutionResultName);
+console.log("bytes:", safe.length);

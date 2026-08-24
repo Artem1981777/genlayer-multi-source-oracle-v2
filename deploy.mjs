@@ -1,0 +1,22 @@
+import { readFileSync, writeFileSync } from "node:fs";
+import { createClient, createAccount } from "genlayer-js";
+import { testnetBradbury } from "genlayer-js/chains";
+import { TransactionStatus } from "genlayer-js/types";
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
+if (!PRIVATE_KEY) { throw new Error("PRIVATE_KEY missing"); }
+const source = readFileSync("contracts/oracle.py", "utf8");
+const code = new TextEncoder().encode(source);
+const account = createAccount(PRIVATE_KEY);
+const client = createClient({ chain: testnetBradbury, account });
+console.log("Deploying MultiSourceOracle...");
+const txHash = await client.deployContract({ code, args: [] });
+console.log("deploy tx:", txHash);
+await client.waitForTransactionReceipt({ hash: txHash, status: TransactionStatus.ACCEPTED, retries: 300 });
+const tx = await client.getTransaction({ hash: txHash });
+const address = tx?.txDataDecoded?.contractAddress ?? tx?.recipient;
+console.log("txExecutionResultName:", tx?.txExecutionResultName);
+console.log("contract address:", address);
+const ok = (tx?.txExecutionResultName === "FINISHED" || tx?.txExecutionResultName === "FINISHED_WITH_RETURN");
+console.log(ok ? ">>> CLEAN DEPLOY OK" : ("!!! not clean -> " + tx?.txExecutionResultName));
+writeFileSync("contract.txt", String(address));
+writeFileSync("deploy-tx.txt", String(txHash));

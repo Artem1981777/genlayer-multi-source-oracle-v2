@@ -1,0 +1,16 @@
+import { readFileSync } from "node:fs";
+import { createClient, createAccount } from "genlayer-js";
+import { testnetBradbury } from "genlayer-js/chains";
+import { TransactionStatus } from "genlayer-js/types";
+const account = createAccount(process.env.PRIVATE_KEY);
+const client = createClient({ chain: testnetBradbury, account });
+const CONTRACT = readFileSync("contract.txt", "utf8").trim();
+const KEY = process.argv[2] || "btc_usd";
+console.log("Updating feed", KEY, "on", CONTRACT);
+const txHash = await client.writeContract({ address: CONTRACT, functionName: "update", args: [KEY] });
+console.log("update tx:", txHash);
+await client.waitForTransactionReceipt({ hash: txHash, status: TransactionStatus.ACCEPTED, retries: 600 });
+const tx = await client.getTransaction({ hash: txHash });
+console.log("txExecutionResultName:", tx?.txExecutionResultName);
+const ok = (tx?.txExecutionResultName === "FINISHED" || tx?.txExecutionResultName === "FINISHED_WITH_RETURN");
+console.log(ok ? ">>> UPDATE CONSENSUS OK" : ("!!! not clean -> " + tx?.txExecutionResultName));

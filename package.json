@@ -1,0 +1,13 @@
+{
+  "name": "genlayer-multi-source-oracle",
+  "version": "0.1.0",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "deploy": "node --env-file=.env deploy.mjs",
+    "register": "node --env-file=.env register.mjs",
+    "update": "node --env-file=.env update.mjs",
+    "read": "node --env-file=.env read.mjs"
+  },
+  "dependencies": { "genlayer-js": "^1.1.8", "viem": "^2.55.18" }
+}

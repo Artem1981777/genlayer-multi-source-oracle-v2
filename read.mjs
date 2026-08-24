@@ -1,0 +1,15 @@
+import { readFileSync } from "node:fs";
+import { createClient, createAccount } from "genlayer-js";
+import { testnetBradbury } from "genlayer-js/chains";
+const account = createAccount(process.env.PRIVATE_KEY);
+const client = createClient({ chain: testnetBradbury, account });
+const CONTRACT = readFileSync("contract.txt", "utf8").trim();
+const KEY = process.argv[2] || "btc_usd";
+const feeds = await client.readContract({ address: CONTRACT, functionName: "list_feeds", args: [] });
+console.log("feeds:", feeds);
+const val = await client.readContract({ address: CONTRACT, functionName: "get", args: [KEY] });
+console.log("value:", val);
+const gv = await client.readContract({ address: CONTRACT, functionName: "get_value", args: [KEY] });
+console.log("get_value:", gv);
+const state = await client.readContract({ address: CONTRACT, functionName: "get_state", args: [] });
+console.log("history:", state.history);
