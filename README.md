@@ -8,13 +8,14 @@ Most on-chain data feeds trust a single operator. MultiSourceOracle instead make
 
 ## How consensus is used
 
-The core `update(key)` method runs a non-deterministic block wrapped by `gl.eq_principle.prompt_comparative`:
+The core `update(key)` method reaches consensus with a custom leader/validator scheme via `gl.vm.run_nondet_unsafe(leader_fn, validator_fn)` - the pattern the GenLayer docs recommend for numeric results, with no LLM in the accept/reject decision:
 
 - Each validator calls `gl.nondet.web.render(url)` for every configured source.
 - An LLM (`gl.nondet.exec_prompt`) extracts a single number answering the feed question from each untrusted page.
 - The validator computes the median of the collected samples and a spread in basis points across sources.
-- The equivalence principle accepts the round only if the validator medians agree within `tolerance_bps` and agree on the boolean `ok`.
-- Outlier protection: a feed is rejected when fewer than two sources return a usable number or the cross-source spread exceeds `max_spread_bps`.
+- Each value is canonicalized to a single deterministic integer `median_units = int(round(median * 10 ** decimals))`. Every validator independently re-fetches the sources, recomputes its own `median_units`, and agrees only if `abs(leader_units - validator_units) * 10000 <= tolerance_bps * abs(leader_units)`, so all validators authorize the exact same canonical integer rather than a range.
+- Outlier protection: the round is rejected when fewer than two sources return a usable number or the cross-source spread exceeds `max_spread_bps`; with three or more sources the single farthest outlier is dropped before the spread is computed.
+- Storage is written only after the non-deterministic block returns the accepted result, so the persisted on-chain value is exactly the consensus value bound by every validator.
 
 ## On-chain state
 
@@ -22,7 +23,7 @@ All state is stored as JSON strings for deterministic serialization:
 
 - `owner` — deployer address; only owner can register or remove feeds.
 - `feeds` — per-feed config: question, sources, tolerance_bps, max_spread_bps, decimals.
-- `values` — last accepted value per feed: value, median, samples, sources_used, spread_bps, updated_round, previous.
+- `values` — last accepted value per feed: value, median, `median_units` (canonical integer), decimals, samples, sources_used, spread_bps, status, updated_round, previous.
 - `history` — append-only audit log of every register, remove and update round.
 
 ## Public methods
@@ -35,8 +36,13 @@ All state is stored as JSON strings for deterministic serialization:
 ## Live deployment
 
 - Network: GenLayer Testnet Bradbury
-- Contract address: 0x9a87961693FF753de5AeBcfD72D861BD21C9d0A4
-- Deploy tx: 0x04652ea6f42ed74cad05083e2fccbfae4e1c2743a359985bceb501e59bcd10b1
+- Contract address: 0xfdE0d2cBD651FC3E7c14fFEc7D981A05E2969DCC
+- Deploy tx: 0x4dffe49a4cd7726b9f4a7b814f0cfe9808425a3cd235b1784112cd2ea5543d64
+- Register tx: 0xf599e8d8d45f025203b6e121fc3d3fea9e8f361dc3fb672ad142e4781b873f52
+- Finalized consensus updates (FINISHED_WITH_RETURN):
+  - round 2: 0x42494e45ed7e66d21798d7ed3b8b95fc97d7552bf4425b9fde67a6ec22059ec9 (btc_usd = 78663.9, spread 2 bps)
+  - round 3, triggered from the live dApp UI: 0x8f5fb6a72973bcc24e567427090318e8387b4473ba9205351ecd32e4e21350ec (btc_usd = 78863.8, sources_used 3, spread_bps 0)
+- Live dApp: https://artem1981777.github.io/genlayer-dashboard/ (Multi-Source Oracle tab)
 - Example feed: btc_usd over Coinbase, CoinGecko and Kraken public price APIs.
 
 ## Run it yourself
