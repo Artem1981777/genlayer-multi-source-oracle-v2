@@ -147,8 +147,18 @@ class MultiSourceOracle(gl.Contract):
                 med = float(s[mid])
             else:
                 med = (float(s[mid - 1]) + float(s[mid])) / 2.0
-            lo = min(samples)
-            hi = max(samples)
+            inliers = list(samples)
+            if n >= 3:
+                fi = 0
+                fd = -1.0
+                for i in range(n):
+                    di = abs(samples[i] - med)
+                    if di > fd:
+                        fd = di
+                        fi = i
+                inliers = [samples[i] for i in range(n) if i != fi]
+            lo = min(inliers)
+            hi = max(inliers)
             if med == 0:
                 spread_bps = 0 if hi == lo else 10000
             else:
@@ -167,10 +177,12 @@ class MultiSourceOracle(gl.Contract):
                 vd = json.loads(leader_fn())
             except Exception:
                 return False
-            if bool(ld.get("ok", False)) != bool(vd.get("ok", False)):
+            ln = int(ld.get("sources_used", 0))
+            vn = int(vd.get("sources_used", 0))
+            if ln < 2:
+                return vn < 2
+            if vn < 2:
                 return False
-            if not bool(ld.get("ok", False)):
-                return True
             lu = int(ld.get("median_units", 0))
             vu = int(vd.get("median_units", 0))
             if lu == 0:
