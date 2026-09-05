@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Deploy parity verification relay</title></head>
+<body>
+<pre id="out">starting...</pre>
+<script>
+const OUT = document.getElementById("out");
+const LINES = [];
+function log(s){ LINES.push(s); OUT.textContent = LINES.join("\n"); }
+async function report(payload){
+  try {
+    await fetch("/report", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(payload) });
+  } catch(e) { LINES.push("report fail: " + e.message); OUT.textContent = LINES.join("\n"); }
+}
+(async () => {
+  // The relay server gives us the exact eth_call body (selector + args) to send.
+  let body;
+  try {
+    const r = await fetch("/verify-body.json");
+    body = await r.text();
+    log("got request body from relay (" + body.length + " bytes)");
+  } catch (e) { log("FAIL: cannot load request body: " + e.message); await report({ ok:false, lines:LINES }); return; }
+
+  let result = null;
+  for (let round = 1; round <= 12 && !result; round++) {
+    try {
+      const r = await fetch("https://rpc-bradbury.genlayer.com/", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body,
+      });
+      const t = await r.text();
+      log("round " + round + " OK status=" + r.status + " respLen=" + t.length);
+      if (t.length > 100) { result = t; }
+    } catch (e) { log("round " + round + " FAIL: " + e.message); }
+    if (!result) await new Promise((r) => setTimeout(r, 3000));
+  }
+  if (!result) { log("DONE: could not fetch txData from browser"); await report({ ok:false, lines:LINES }); return; }
+  log("DONE: got full response (" + result.length + " bytes)");
+  await report({ ok:true, lines:LINES, rpcResult: result });
+})();
+</script>
+</body>
+</html>

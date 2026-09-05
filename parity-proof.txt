@@ -1,0 +1,5 @@
+deploy tx: 0x053f9caa65c1e2935a2992a69aad92efbc94904e2e40b78cb2b3937924bfec09
+local    sha256: 1324409e64ad91f2811c3d8a409eefabcd524de447d858273d97dc5f8a2d64f5 (14343 bytes)
+deployed sha256: 1324409e64ad91f2811c3d8a409eefabcd524de447d858273d97dc5f8a2d64f5 (14343 bytes)
+PARITY OK: deployed contract code is byte-for-byte identical to contracts/oracle.py
+verified at: 2026-09-05T13:19:23.990Z
