@@ -1,13 +1,13 @@
 MultiSourceOracle verified release deployment
-release commit: a479c36
-GitHub Actions run: https://github.com/Artem1981777/genlayer-multi-source-oracle-v2/actions/runs/35453480327
-validation: GenVM lint + semantic validation passed; exact consensus regression checks 22/22 passed
+release commit: 72b57b1
+GitHub Actions run: https://github.com/Artem1981777/genlayer-multi-source-oracle-v2/actions/runs/35453776798
+validation: GenVM lint + semantic validation passed; exact consensus regression checks 23/23 passed
 network: GenLayer Testnet Bradbury
-contract: 0x0856Ac3120Ac58c84EfaF5A40fDD5FE067810b97
-contract explorer: https://explorer-bradbury.genlayer.com/address/0x0856Ac3120Ac58c84EfaF5A40fDD5FE067810b97
-deploy tx: 0xcde1dcf9aaa2f3ddf70a1179ec3c55c833ad79f038df6ee4818f3063ea8e3368
-transaction explorer: https://explorer-bradbury.genlayer.com/tx/0xcde1dcf9aaa2f3ddf70a1179ec3c55c833ad79f038df6ee4818f3063ea8e3368
+contract: 0xE8003256393C1909630fAB37F3E2015d9aff3274
+contract explorer: https://explorer-bradbury.genlayer.com/address/0xE8003256393C1909630fAB37F3E2015d9aff3274
+deploy tx: 0xefdf61d65e4a0453bc211126b6824f2babfef9b889a2c84fdf72bca450e33814
+transaction explorer: https://explorer-bradbury.genlayer.com/tx/0xefdf61d65e4a0453bc211126b6824f2babfef9b889a2c84fdf72bca450e33814
 source file: contracts/oracle.py
-source bytes: 14041 UTF-8
-source sha256: 47696d4bee7e2cb849609fa9b9b00a7c8d0acda52426101f3da37e2a49dba85a
+source bytes: 14383 UTF-8
+source sha256: 111ad1dbcb1d24798c635973cc125a7e706695f63b60aa681dab2fa95348e57f
 The deployment workflow checked out this exact commit and passed this exact source to deployContract.

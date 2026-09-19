@@ -51,14 +51,14 @@ against the release commit.
 
 ### Verified release deployment
 
-The public release commit `a479c36` was validated by GitHub Actions run
-[`35453480327`](https://github.com/Artem1981777/genlayer-multi-source-oracle-v2/actions/runs/35453480327): GenVM lint and semantic validation passed, and all 22 offline
+The public release commit `72b57b1` was validated by GitHub Actions run
+[`35453776798`](https://github.com/Artem1981777/genlayer-multi-source-oracle-v2/actions/runs/35453776798): GenVM lint and semantic validation passed, and all 23 offline
 exact-consensus regression checks passed. That exact commit was then deployed
 to GenLayer Testnet Bradbury using the repository secret-backed workflow.
 
-- Contract: [`0x0856Ac3120Ac58c84EfaF5A40fDD5FE067810b97`](https://explorer-bradbury.genlayer.com/address/0x0856Ac3120Ac58c84EfaF5A40fDD5FE067810b97)
-- Deploy transaction: [`0xcde1dcf9aaa2f3ddf70a1179ec3c55c833ad79f038df6ee4818f3063ea8e3368`](https://explorer-bradbury.genlayer.com/tx/0xcde1dcf9aaa2f3ddf70a1179ec3c55c833ad79f038df6ee4818f3063ea8e3368)
-- Submitted/deployed source SHA-256: `47696d4bee7e2cb849609fa9b9b00a7c8d0acda52426101f3da37e2a49dba85a` (14,041 UTF-8 bytes)
+- Contract: [`0xE8003256393C1909630fAB37F3E2015d9aff3274`](https://explorer-bradbury.genlayer.com/address/0xE8003256393C1909630fAB37F3E2015d9aff3274)
+- Deploy transaction: [`0xefdf61d65e4a0453bc211126b6824f2babfef9b889a2c84fdf72bca450e33814`](https://explorer-bradbury.genlayer.com/tx/0xefdf61d65e4a0453bc211126b6824f2babfef9b889a2c84fdf72bca450e33814)
+- Submitted/deployed source SHA-256: `111ad1dbcb1d24798c635973cc125a7e706695f63b60aa681dab2fa95348e57f` (14,383 UTF-8 bytes)
 - Machine-readable deployment record: [`deployment-proof.txt`](deployment-proof.txt)
 
 ## Run it yourself
