@@ -1,0 +1,84 @@
+name: Validate and deploy MultiSourceOracle
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: "Deploy this exact commit to GenLayer Bradbury"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+env:
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout submitted source
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install GenLayer linter
+        run: python -m pip install --upgrade genvm-linter genlayer-test
+      - name: Run GenVM lint and semantic validation
+        run: npm run lint
+      - name: Run exact consensus regression simulation
+        run: python3 sim_consensus.py
+
+  deploy:
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy == true
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: genlayer-bradbury
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout exact validated commit
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Install JavaScript dependencies
+        run: npm ci
+      - name: Write ephemeral deployment environment
+        shell: bash
+        env:
+          GENLAYER_PRIVATE_KEY: ${{ secrets.GENLAYER_PRIVATE_KEY }}
+        run: |
+          test -n "$GENLAYER_PRIVATE_KEY"
+          printf 'PRIVATE_KEY=%s\n' "$GENLAYER_PRIVATE_KEY" > .env
+          trap 'rm -f .env' EXIT
+          node --env-file=.env deploy.mjs --direct
+          test -s contract.txt
+          test -s deploy-tx.txt
+          {
+            echo "## Bradbury deployment"
+            echo "commit: $GITHUB_SHA"
+            echo "contract: $(cat contract.txt)"
+            echo "deploy_tx: $(cat deploy-tx.txt)"
+            echo "explorer: https://explorer-bradbury.genlayer.com/address/$(cat contract.txt)"
+          } >> "$GITHUB_STEP_SUMMARY"
+          mkdir -p deployment-artifacts
+          cp contract.txt deploy-tx.txt deployment-artifacts/
+          sha256sum contracts/oracle.py > deployment-artifacts/source-sha256.txt
+          cp contracts/oracle.py deployment-artifacts/oracle.py
+          rm -f .env
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+      - name: Upload matching deployment artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bradbury-deployment-${{ github.sha }}
+          path: deployment-artifacts/
+          if-no-files-found: error
