@@ -54,6 +54,7 @@ jobs:
         shell: bash
         env:
           GENLAYER_PRIVATE_KEY: ${{ secrets.GENLAYER_PRIVATE_KEY }}
+          NODE_OPTIONS: "--max-old-space-size=4096"
         run: |
           test -n "$GENLAYER_PRIVATE_KEY"
           printf 'PRIVATE_KEY=%s\n' "$GENLAYER_PRIVATE_KEY" > .env
@@ -73,8 +74,6 @@ jobs:
           sha256sum contracts/oracle.py > deployment-artifacts/source-sha256.txt
           cp contracts/oracle.py deployment-artifacts/oracle.py
           rm -f .env
-        env:
-          NODE_OPTIONS: "--max-old-space-size=4096"
       - name: Upload matching deployment artifacts
         uses: actions/upload-artifact@v4
         with:
