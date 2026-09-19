@@ -16,6 +16,7 @@ It proves the consensus properties the reviewer required:
   T6  validator loses one source           -> REJECTED (outcome changed)
   T7  even sample count (2 sources)        -> accepted, averaged median exact
   T8  benign per-source noise, same outcome-> accepted (robustness)
+  T9  same median but different spread     -> REJECTED (full outcome binding)
 
 Run:  python sim_consensus.py   (no dependencies, stdlib only)
 """
@@ -278,6 +279,16 @@ err = attempt(c)
 check(GL.last_votes == [True, True, True] and err is None,
       "same derived outcome (median/spread/count) still accepted — strict but not brittle")
 check(stored(c).get("median_units") == 10000000, "persisted median_units == 10000000")
+
+# T9: median alone is insufficient; spread must also match -----------------
+print("\n[T9] validator keeps median but changes spread -> REJECT")
+c = fresh()
+GL.tamper = None
+GL.leader_view = {CB: 100000.0, CG: 100100.0, KR: 100200.0}
+GL.validator_views = [{CB: 100000.0, CG: 100100.0, KR: 100150.0} for _ in range(3)]
+err = attempt(c)
+check(GL.last_votes == [False, False, False], "validators reject same median with different spread")
+check(err is not None, "full acceptance outcome binding prevents publication")
 
 # summary ------------------------------------------------------------------
 failed = [label for ok, label in RESULTS if not ok]

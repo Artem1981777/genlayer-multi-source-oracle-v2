@@ -4,11 +4,13 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
+    "lint": "genvm-lint check contracts/oracle.py",
     "deploy": "node --env-file=.env deploy.mjs",
     "register": "node --env-file=.env register.mjs",
     "update": "node --env-file=.env update.mjs",
     "read": "node --env-file=.env read.mjs",
-    "test": "node --env-file=.env test.mjs"
+    "test": "node --env-file=.env test.mjs",
+    "verify-parity": "node verify-relay.mjs"
   },
   "dependencies": { "genlayer-js": "^1.1.8", "viem": "^2.55.18" }
 }

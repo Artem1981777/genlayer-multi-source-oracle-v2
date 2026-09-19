@@ -34,15 +34,20 @@ All state is stored as JSON strings for deterministic serialization:
 - `update(key)` — anyone can trigger a consensus refresh of the feed value.
 - Views: `get_state`, `list_feeds`, `get_feed`, `get`, `get_value`, `is_stale`.
 
-## Live deployment
+## Deployment evidence
 
-- Network: GenLayer Testnet Bradbury
-- Contract address: [0x5dECa96a72749fDEc8F19e5bc289B0EF3839874C](https://explorer-bradbury.genlayer.com/address/0x5dECa96a72749fDEc8F19e5bc289B0EF3839874C)
-- Deploy tx: [0x053f9caa65c1e2935a2992a69aad92efbc94904e2e40b78cb2b3937924bfec09](https://explorer-bradbury.genlayer.com/tx/0x053f9caa65c1e2935a2992a69aad92efbc94904e2e40b78cb2b3937924bfec09) — ACCEPTED, FINISHED_WITH_RETURN
-- Register tx (btc_usd): [0x4f46e05e200c9f6443f5da05fd24f2e2e96326779160bc3e8a074449aaf6a5c6](https://explorer-bradbury.genlayer.com/tx/0x4f46e05e200c9f6443f5da05fd24f2e2e96326779160bc3e8a074449aaf6a5c6)
-- Finalized consensus update (FINISHED_WITH_RETURN): [0xbf7de69e1abc111ed0a87b45f095a3b8cd862c9db9ac2164df1132ea1f462b60](https://explorer-bradbury.genlayer.com/tx/0xbf7de69e1abc111ed0a87b45f095a3b8cd862c9db9ac2164df1132ea1f462b60) — btc_usd = 79737.00 (median_units 7973700), sources_used 3, spread_bps 0
-- Example feed: btc_usd over Coinbase, CoinGecko and Kraken public price APIs.
-- **Source parity proof**: the deployed contract code is byte-for-byte identical to the submitted `contracts/oracle.py` — 14,343 bytes, sha256 `1324409e64ad91f2811c3d8a409eefabcd524de447d858273d97dc5f8a2d64f5` on both sides (verified with `verify-relay.mjs`, which fetches the deployed code via `ConsensusData.getTransactionData`, RLP-decodes `[code, constructorArgs, leaderOnly]`, and compares sha256 against the local file; proof saved to `parity-proof.txt`).
+Deployment evidence is generated for each release and must refer to the same
+commit as the submitted `contracts/oracle.py`. Run `npm run deploy`, then save
+the resulting address and transaction hash, register the example feed, run one
+successful update, and run `npm run verify-parity`. Do not reuse an Explorer
+address from an earlier implementation: the parity proof is valid only when
+the deployed UTF-8 source and the submitted file have identical bytes and
+SHA-256 digests.
+
+The example feed is `btc_usd` over Coinbase, CoinGecko and Kraken public price
+APIs. Deployment artifacts (`contract.txt`, `deploy-tx.txt`, and the generated
+parity proof) are intentionally ignored by Git until they have been verified
+against the release commit.
 
 ## Run it yourself
 
@@ -53,6 +58,8 @@ All state is stored as JSON strings for deterministic serialization:
 5. `npm run update` — runs a consensus round and publishes the median.
 6. `npm run read` — reads back feeds, value and history.
 7. `npm test` — deploys a fresh instance and runs the 6-check on-chain suite.
+8. `npm run lint` — runs the official GenVM linter and semantic validator.
+9. `npm run verify-parity` — verifies deployed byte-for-byte source parity.
 
 All scripts tunnel RPC through a local browser QUIC relay (`rpc-relay.mjs` opens a page that forwards RPC over HTTP/3) because the direct TCP path to the Bradbury RPC is unreliable on some networks; pass `--direct` to bypass the relay.
 
