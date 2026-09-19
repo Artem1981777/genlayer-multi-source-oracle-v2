@@ -24,7 +24,7 @@ All state is stored as JSON strings for deterministic serialization:
 
 - `owner` — deployer address; only owner can register or remove feeds.
 - `feeds` — per-feed config: question, sources, tolerance_bps, max_spread_bps, decimals.
-- `values` — last accepted value per feed: value, median, `median_units` (canonical integer), decimals, samples, provenance, sources_used, spread_bps, status, updated_round, previous.
+- `values` — last accepted value per feed: value, median, `median_units` (canonical integer), and a persisted `consensus` object containing the full accepted outcome (`ok`, `median_units`, `spread_bps`, `sources_used`, `decimals`), plus samples, provenance, status, updated_round, and previous value.
 - `history` — append-only audit log of every register, remove and update round.
 
 ## Public methods
