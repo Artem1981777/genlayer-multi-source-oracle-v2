@@ -49,6 +49,18 @@ APIs. Deployment artifacts (`contract.txt`, `deploy-tx.txt`, and the generated
 parity proof) are intentionally ignored by Git until they have been verified
 against the release commit.
 
+### Verified release deployment
+
+The public release commit `a479c36` was validated by GitHub Actions run
+[`35453480327`](https://github.com/Artem1981777/genlayer-multi-source-oracle-v2/actions/runs/35453480327): GenVM lint and semantic validation passed, and all 22 offline
+exact-consensus regression checks passed. That exact commit was then deployed
+to GenLayer Testnet Bradbury using the repository secret-backed workflow.
+
+- Contract: [`0x0856Ac3120Ac58c84EfaF5A40fDD5FE067810b97`](https://explorer-bradbury.genlayer.com/address/0x0856Ac3120Ac58c84EfaF5A40fDD5FE067810b97)
+- Deploy transaction: [`0xcde1dcf9aaa2f3ddf70a1179ec3c55c833ad79f038df6ee4818f3063ea8e3368`](https://explorer-bradbury.genlayer.com/tx/0xcde1dcf9aaa2f3ddf70a1179ec3c55c833ad79f038df6ee4818f3063ea8e3368)
+- Submitted/deployed source SHA-256: `47696d4bee7e2cb849609fa9b9b00a7c8d0acda52426101f3da37e2a49dba85a` (14,041 UTF-8 bytes)
+- Machine-readable deployment record: [`deployment-proof.txt`](deployment-proof.txt)
+
 ## Run it yourself
 
 1. `npm install`
