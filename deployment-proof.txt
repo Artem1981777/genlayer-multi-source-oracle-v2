@@ -8,6 +8,6 @@ contract explorer: https://explorer-bradbury.genlayer.com/address/0xE8003256393C
 deploy tx: 0xefdf61d65e4a0453bc211126b6824f2babfef9b889a2c84fdf72bca450e33814
 transaction explorer: https://explorer-bradbury.genlayer.com/tx/0xefdf61d65e4a0453bc211126b6824f2babfef9b889a2c84fdf72bca450e33814
 source file: contracts/oracle.py
-source bytes: 14383 UTF-8
+source bytes: 14171 UTF-8
 source sha256: 111ad1dbcb1d24798c635973cc125a7e706695f63b60aa681dab2fa95348e57f
 The deployment workflow checked out this exact commit and passed this exact source to deployContract.

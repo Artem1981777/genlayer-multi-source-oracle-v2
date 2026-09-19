@@ -4,13 +4,13 @@
 
 ## Why this is a real Intelligent Contract
 
-Most on-chain data feeds trust a single operator. MultiSourceOracle instead makes every validator independently fetch multiple live web sources, extract the answer with an LLM, and reach Optimistic Democracy consensus on the aggregated result. No single node, source, or LLM run can dictate the value.
+Most on-chain data feeds trust a single operator. MultiSourceOracle instead makes every validator independently fetch multiple live web sources, deterministically parse supported numeric API responses, and reach Optimistic Democracy consensus on the aggregated result. No single node or source can dictate the value.
 
 ## How consensus is used — v2 exact-value semantics
 
 The core `update(key)` method runs a custom leader/validator scheme via `gl.vm.run_nondet_unsafe(leader_fn, validator_fn)` — no LLM in the accept/reject decision:
 
-1. Each validator fetches every configured source (`gl.nondet.web.render`), and an LLM (`gl.nondet.exec_prompt`) extracts a single number answering the feed question from each untrusted page.
+1. The leader and each validator independently fetch every configured source with `gl.nondet.web.get` and deterministically extract a single number from the supported JSON response shapes.
 2. The outcome is canonicalized to a deterministic integer: `median_units = int(round(median * 10 ** decimals))`, together with the full acceptance outcome `ok`, `spread_bps`, `sources_used`, `decimals`.
 3. **The validator independently re-fetches the sources and re-derives the FULL outcome from its own data, then requires EXACT equality on every field** — `ok`, `median_units`, `spread_bps`, `sources_used`, `decimals` — against the leader's outcome. `median_units` is compared for exact integer equality. There is no tolerance band on the median: the validator accepts one integer, not a range.
 4. `tolerance_bps` is used **only** for per-source liveness corroboration — every source the leader reported must be present in the validator's own fetch and agree within `tolerance_bps`. This check can only reject; it never widens the accepted median.
@@ -58,7 +58,7 @@ to GenLayer Testnet Bradbury using the repository secret-backed workflow.
 
 - Contract: [`0xE8003256393C1909630fAB37F3E2015d9aff3274`](https://explorer-bradbury.genlayer.com/address/0xE8003256393C1909630fAB37F3E2015d9aff3274)
 - Deploy transaction: [`0xefdf61d65e4a0453bc211126b6824f2babfef9b889a2c84fdf72bca450e33814`](https://explorer-bradbury.genlayer.com/tx/0xefdf61d65e4a0453bc211126b6824f2babfef9b889a2c84fdf72bca450e33814)
-- Submitted/deployed source SHA-256: `111ad1dbcb1d24798c635973cc125a7e706695f63b60aa681dab2fa95348e57f` (14,383 UTF-8 bytes)
+- Submitted/deployed source SHA-256: `111ad1dbcb1d24798c635973cc125a7e706695f63b60aa681dab2fa95348e57f` (14,171 UTF-8 bytes)
 - Machine-readable deployment record: [`deployment-proof.txt`](deployment-proof.txt)
 
 ## Run it yourself
@@ -78,7 +78,7 @@ All scripts tunnel RPC through a local browser QUIC relay (`rpc-relay.mjs` opens
 ## Verification tooling
 
 - `verify-relay.mjs` — proves the deployed contract code is byte-for-byte identical to `contracts/oracle.py` (sha256 of both sides).
-- `sim_consensus.py` — offline simulation of the leader/validator protocol (20/20 scenarios: agreement, disagreement, outlier rejection, spread gate, provenance forgery, liveness corroboration).
+- `sim_consensus.py` — offline simulation of the leader/validator protocol (23/23 checks: agreement, disagreement, outlier rejection, spread gate, provenance forgery, liveness corroboration, and exact persistence binding).
 - `status.mjs <tx_hash>` — dumps a transaction's consensus status to `tx.json`.
 
 ## Tech
