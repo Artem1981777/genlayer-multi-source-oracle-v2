@@ -297,6 +297,6 @@ class MultiSourceOracle(gl.Contract):
         vals = self._values()
         prev = vals.get(key, {})
         round_no = len(self._history_list()) + 1
-        vals[key] = {"value": median, "median": median, "median_units": median_units, "decimals": dec, "samples": samples, "provenance": provenance, "sources_used": sources_used, "spread_bps": spread_bps, "updated_round": round_no, "updated_by": str(gl.message.sender_address), "status": "ok", "previous": prev.get("value", None)}
+        vals[key] = {"value": median, "median": median, "median_units": median_units, "decimals": dec, "consensus": {"ok": True, "median_units": median_units, "spread_bps": spread_bps, "sources_used": sources_used, "decimals": dec}, "samples": samples, "provenance": provenance, "sources_used": sources_used, "spread_bps": spread_bps, "updated_round": round_no, "updated_by": str(gl.message.sender_address), "status": "ok", "previous": prev.get("value", None)}
         self.values = json.dumps(vals)
         self._log("update", key, "median=" + str(median) + " n=" + str(sources_used) + " spread_bps=" + str(spread_bps))

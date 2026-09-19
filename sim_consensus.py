@@ -186,6 +186,8 @@ s = stored(c)
 check(s.get("median_units") == 10000050, "persisted median_units == verified 10000050")
 check(s.get("value") == 100000.5 and s.get("sources_used") == 3 and s.get("spread_bps") == 0,
       "persisted value/spread/sources match the verified outcome")
+check(s.get("consensus") == {"ok": True, "median_units": 10000050, "spread_bps": 0, "sources_used": 3, "decimals": 2},
+      "persisted consensus object binds the full acceptance outcome")
 
 # T2: validator medians differ but stay inside the OLD tolerance band -----
 print("\n[T2] validator median differs (within old tolerance band) -> REJECT")
