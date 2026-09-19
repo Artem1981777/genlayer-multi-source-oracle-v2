@@ -28,7 +28,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install GenLayer linter
-        run: python -m pip install --upgrade genvm-linter genlayer-test
+        run: python -m pip install --upgrade genvm-linter
       - name: Run GenVM lint and semantic validation
         run: npm run lint
       - name: Run exact consensus regression simulation
